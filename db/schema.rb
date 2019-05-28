@@ -10,18 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 20190528200607) do
+ActiveRecord::Schema.define(version: 5) do
 
   create_table "appearances", force: :cascade do |t|
     t.integer "event_id"
     t.integer "artist_id"
   end
 
+  create_table "artists", force: :cascade do |t|
+    t.string "name"
+  end
+
   create_table "events", force: :cascade do |t|
     t.string   "name"
     t.datetime "date"
     t.string   "location"
+  end
+
+  create_table "tickets", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "event_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
