@@ -24,7 +24,9 @@ ActiveRecord::Schema.define(version: 5) do
   create_table "events", force: :cascade do |t|
     t.string   "name"
     t.datetime "date"
-    t.string   "location"
+    t.string   "city"
+    t.string   "state"
+    t.string   "venue_name"
   end
 
   create_table "tickets", force: :cascade do |t|
