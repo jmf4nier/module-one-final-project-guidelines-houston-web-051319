@@ -14,38 +14,41 @@ end
 def get_all_events_for_artist
     puts "Please enter an artist"
     artist = gets.chomp
-    url = "https://app.ticketmaster.com/discovery/v2/events.json?size=7&keyword=#{artist}&apikey=#{$ticket_master_api_key}"
-    api_response = RestClient.get("https://app.ticketmaster.com/discovery/v2/events.json?size=7&keyword=#{artist}&apikey=#{$ticket_master_api_key}")
+    
+    api_response = RestClient.get("https://app.ticketmaster.com/discovery/v2/events.json?size=20&keyword=#{artist}&apikey=#{$ticket_master_api_key}")
     json_response = JSON.parse(api_response)
 
-    #p json_response["_embedded"]["events"][9]["_embedded"]["attractions"]
-    #ISSUE..SOMETIMES AN EVENT DOES NOT HAVE attractions key SO THE FUNCTION CRASHES
+    overlapping_attractions = []
     generated_events = json_response["_embedded"]["events"]
-    overlapping_attractions = generated_events.map do |event_hash|
-        break if event_hash["_embedded"]["attractions"] == nil
-        sub_arr = event_hash["_embedded"]["attractions"].map do |attraction_hash|
-            attraction_hash["name"]
+    generated_events.each do |event_hash|
+        if(event_hash["_embedded"]["attractions"] != nil)
+            sub_arr = event_hash["_embedded"]["attractions"].map do |attraction_hash|
+                attraction_hash["name"]
+            end
+            sub_arr = sub_arr.join(", ")
+            overlapping_attractions << sub_arr
         end
-        sub_arr.join(", ")
-    end.uniq
+    end
+    
+    overlapping_attractions = overlapping_attractions.uniq
     
     attraction_selection = $prompt.select("Please select the artist or group of artist that you are interested in", overlapping_attractions).split(", ")
     
     events_with_artist = []
     generated_events.each do |event_hash|
-        count = 0
-        desired_count = event_hash["_embedded"]["attractions"].length
-        event_hash["_embedded"]["attractions"].each do |attraction_hash|
-            #puts "current attraction hash name = #{attraction_hash["name"]}"
-            attraction_selection.each do |attraction_name|
-                #puts "current attraction name = #{attraction_name}"
-                if(attraction_name == attraction_hash["name"])
-                    count += 1
+        if(event_hash["_embedded"]["attractions"] != nil)
+            count = 0
+            desired_count = attraction_selection.length
+            event_hash["_embedded"]["attractions"].each do |attraction_hash|
+                attraction_selection.each do |attraction_name|
+                    if(attraction_name == attraction_hash["name"])
+                        count += 1
+                    end
                 end
             end
-        end
-        if(count == desired_count)
-            events_with_artist << event_hash
+            if(count == desired_count)
+                events_with_artist << event_hash
+            end
         end
     end
     
@@ -56,14 +59,13 @@ def get_all_events_for_artist
         event_hash["name"]
     end
 
-    p events
+    event_selection= $prompt.select("Here are the events with those artist. Please select the one that you would like more information", events)
+    generated_events.select do |event_hash|
+        event_hash["name"] == event_selection
+    end
     #PERHAPS RETURN CHOSEN EVENT AND THEN INVOKE A PURCHASE TICKET METHOD WITH SELECTED EVENT...CAN MAKE $selected_event A GLOBAL VARIABLE IF THAT MAKES IT EASIER
     #======================================================
-    # puts events_with_artist
-    #puts events_with_artist.length
-    # p overlapping_attractions
-    # puts attractions
-    #puts url
+    #PROBABLY BEST TO LET USER SELECT AN EVENT AND THEN OUTPUT THE ENTIRE HASH FOR THAT EVENT
 end
 
 def autheticate_user_screen
@@ -105,3 +107,4 @@ end
  #logged_in_screen
  get_all_events_for_artist
  puts "Working Program!!"
+
