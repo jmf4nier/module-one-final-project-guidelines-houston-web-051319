@@ -39,9 +39,19 @@ end
 def logged_in_screen
     $prompt.select("What would you like to do?") do |menu|
         menu.choice 'View all purchased tickets'
-        menu.choice 'View events in a specified city'
+        menu.choice 'Search events by State'
+        menu.choice 'Search events by City'
     end
 end
+
+
+
+
+
+
+
+
+
 
 #===========================================
 #MAIN METHOD
