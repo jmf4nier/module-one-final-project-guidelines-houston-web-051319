@@ -55,6 +55,6 @@ end
 
 #===========================================
 #MAIN METHOD
- autheticate_user_screen
- logged_in_screen
- puts "Working Program!!"
+#  autheticate_user_screen
+#  logged_in_screen
+#  puts "Working Program!!"
