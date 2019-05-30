@@ -1,5 +1,6 @@
 require_relative '../config/environment'
 $prompt = TTY::Prompt.new
+require 'pry'
 
 $user = nil
 $ticket_master_api_key = "kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ"
@@ -52,20 +53,49 @@ def get_all_events_for_artist
         end
     end
     
-    #======================================================
-    #AFTER THIS LOOP, events CONTAINS AN ARRAY OF EVENTS...WHAT TO DO NEXT? PURCHASE? SHOW MORE INFO?
     puts "Here are the events with those artist"
     events = events_with_artist.map do |event_hash|
         event_hash["name"]
     end
 
+    selected_event_hash = []
     event_selection= $prompt.select("Here are the events with those artist. Please select the one that you would like more information", events)
-    generated_events.select do |event_hash|
-        event_hash["name"] == event_selection
+
+    generated_events.each do |event_hash|
+        if(event_hash["name"] == event_selection)
+            selected_event_hash << event_hash
+        end
     end
-    #PERHAPS RETURN CHOSEN EVENT AND THEN INVOKE A PURCHASE TICKET METHOD WITH SELECTED EVENT...CAN MAKE $selected_event A GLOBAL VARIABLE IF THAT MAKES IT EASIER
-    #======================================================
-    #PROBABLY BEST TO LET USER SELECT AN EVENT AND THEN OUTPUT THE ENTIRE HASH FOR THAT EVENT
+    selected_event_hash[0]#TRY TO FINISH A HASH AND NOT AN ARRAY...USE EVENT IDs TO DIFFERENTIATE BETWEEN EVENTS WITH SAME NAMES
+end
+
+def store_event_in_db(event_hash)
+    newEvent = Event.new(name: event_hash["name"], date: event_hash["dates"]["start"]["localDate"], city: event_hash["_embedded"]["venues"][0]["city"]["name"], state: event_hash["_embedded"]["venues"][0]["state"]["name"], venue_name: event_hash["_embedded"]["venues"][0]["name"])
+    newEvent.save 
+    newEvent
+end
+
+def store_ticket_in_db(user, event)
+    new_ticket = Ticket.new(user_id: user.id, event_id: event.id)
+    new_ticket.save
+    new_ticket
+end
+
+def store_appearance_in_db(event, artist)
+    new_appearance = Appearance.new(event_id: event.id, artist_id: artist.id)
+    new_appearance.save
+    new_appearance
+end
+
+def store_artist_in_db(event_hash)
+    stored_event = store_event_in_db(event_hash)
+
+    event_hash["_embedded"]["attractions"].each do |attraction_hash|
+        new_artist = Artist.new(name: attraction_hash["name"])
+        new_artist.save
+        store_appearance_in_db(stored_event, new_artist)
+    end
+    stored_event
 end
 
 def autheticate_user_screen
@@ -103,8 +133,10 @@ end
 
 #===========================================
 #MAIN METHOD
- #autheticate_user_screen
+ autheticate_user_screen
  #logged_in_screen
- get_all_events_for_artist
+ selected_event = get_all_events_for_artist
+ event = store_artist_in_db(selected_event)
+ store_ticket_in_db($user, event)
  puts "Working Program!!"
 
