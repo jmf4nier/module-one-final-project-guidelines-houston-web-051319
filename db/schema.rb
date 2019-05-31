@@ -27,7 +27,6 @@ ActiveRecord::Schema.define(version: 5) do
     t.string   "city"
     t.string   "state"
     t.string   "venue_name"
-
   end
 
   create_table "tickets", force: :cascade do |t|
