@@ -1,5 +1,5 @@
 require_relative '../config/environment'
-$prompt = TTY::Prompt.new(active_color: :cyan)
+$prompt = TTY::Prompt.new
 
 $user = nil
 $ticket_master_api_key = "kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ"
@@ -38,7 +38,7 @@ def user_response_to_city
         user_response_to_city
     else
         event_data = city_events_by_name(response.capitalize)
-        selection = $prompt.select("Choose an event to buy tickets or select back", "back", (event_data), per_page: 20)
+        selection = $prompt.select("Choose an event to buy tickets or select back", "back", (event_data))
         #iterates the event name data through the prompt for selection by user
         if  selection == "back"
             #breaks method back to last call
@@ -81,7 +81,7 @@ def user_response_to_state
         user_response_to_state
     else
         event_data = state_events_by_name(response.upcase)
-        selection = $prompt.select("Choose an event to buy tickets or select back", "back", (event_data), per_page: 20)
+        selection = $prompt.select("Choose an event to buy tickets or select back", "back", (event_data))
         #iterates the event name data through the prompt for selection by user
         if  selection == "back"
             #breaks method back to last call
@@ -122,7 +122,7 @@ def get_all_events_for_artist
     
     overlapping_attractions = overlapping_attractions.uniq
     
-    attraction_selection = $prompt.select("Please select the artist or group of artist that you are interested in", overlapping_attractions, per_page: 20).split(", ")
+    attraction_selection = $prompt.select("Please select the artist or group of artist that you are interested in", overlapping_attractions).split(", ")
     
     events_with_artist = []
     generated_events.each do |event_hash|
@@ -148,7 +148,7 @@ def get_all_events_for_artist
     end
 
     selected_event_hash = []
-    event_selection= $prompt.select("Here are the events with those artist. Please select the one that you would like more information", events, per_page: 20)
+    event_selection= $prompt.select("Here are the events with those artist. Please select the one that you would like more information", events)
 
     generated_events.each do |event_hash|
         if(event_hash["name"] == event_selection)
@@ -190,9 +190,7 @@ def store_artist_in_db(event_hash)
 end
 
 def purchase_ticket(selected_event_hash)
-    confirmation = $prompt.yes?('Buy tickets?') do |q|
-        q.default false
-    end
+    confirmation = $prompt.yes?('Buy tickets?')
     if confirmation == true
         puts 'Congratulations!  You have tickets!'
         sleep(1)
@@ -214,32 +212,22 @@ def autheticate_user_screen
             exit(0)
         end
         if(selection == "Sign up")#Create new user and save to data base. Then enter logged in screen
-            name = $prompt.ask("What is your name?") do |q|
-                q.modify :capitalize
-                q.required true 
-                q.messages[:required?] = 'Please enter a name'
-            end
-            $prompt.ok("Welcome #{name}!")
-            sleep(1)
+            puts "Please enter a name"
+            name = gets.chomp
             new_user = User.new(name: name)
             new_user.save
             $user = new_user
         else#User selected Login. 
             loop do 
-                name = $prompt.ask("Please enter a name or type 'back'") do |q|
-                    q.modify :capitalize
-                    q.required true 
-                    q.messages[:required?] = 'Please enter a name'
-                end
-                break if name == "Back"
+                puts "Please enter a name"
+                name = gets.chomp
+                break if name == "back"
                 authenticated_user = User.all.find_by(name: name)
                 if(authenticated_user != nil)
-                    $prompt.ok("Welcome back #{name}!")
-                    sleep(1)
                     $user = authenticated_user
                     break
                 end
-                $prompt.error("Incorrect Name. Try again") #Name for now. In the future, program may be updated to contain username/password
+                puts "Incorrect Name. Try again" #Name for now. In the future, program may be updated to contain username/password
             end     
         end
     end
