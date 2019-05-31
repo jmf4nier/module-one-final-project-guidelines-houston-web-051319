@@ -8,3 +8,4 @@ gem "require_all"
 gem "tty-prompt"
 gem "rest-client"
 gem 'http-cookie'
+gem 'colorize'

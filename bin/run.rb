@@ -240,6 +240,7 @@ def logged_in_screen
         menu.choice 'Find event by City'
         menu.choice 'Find event by State'
         menu.choice 'View all your tickets'
+        menu.choice 'Get more information for all your events'
         menu.choice 'Logout'
     end
 end
@@ -269,6 +270,8 @@ while(true)
             end
         elsif(main_menu_selection == "View all your tickets")
             $user.get_all_tickets
+        elsif(main_menu_selection == "Get more information for all your events")
+            $user.get_more_event_info
         elsif(main_menu_selection == "Logout")
             $user = nil
             authenticated = false
