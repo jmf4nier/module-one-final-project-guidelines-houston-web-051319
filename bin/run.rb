@@ -9,6 +9,7 @@ def situation_selection
     $prompt.select("Welcome to Ticket Master! What would you like to do?") do |menu|
         menu.choice 'Sign up'
         menu.choice 'Login'
+        menu.choice 'Terminate program'
     end
 end
 
@@ -98,9 +99,17 @@ def store_artist_in_db(event_hash)
     stored_event
 end
 
+def purchase_ticket(selected_event_hash)
+    event = store_artist_in_db(selected_event_hash)
+    store_ticket_in_db($user, event)
+ end
+
 def autheticate_user_screen
     while($user == nil)
         selection = situation_selection
+        if(selection == "Terminate program")
+            exit(0)
+        end
         if(selection == "Sign up")#Create new user and save to data base. Then enter logged in screen
             puts "Please enter a name"
             name = gets.chomp
@@ -121,22 +130,33 @@ def autheticate_user_screen
             end     
         end
     end
-    #logged_in_screen
+    true
 end
 
 def logged_in_screen
     $prompt.select("What would you like to do?") do |menu|
-        menu.choice 'View all purchased tickets'
-        menu.choice 'View events in a specified city'
+        menu.choice 'Find event by searching for an artist'
+        menu.choice 'View all your tickets'
+        menu.choice 'Logout'
     end
 end
 
 #===========================================
 #MAIN METHOD
- autheticate_user_screen
- #logged_in_screen
- selected_event = get_all_events_for_artist
- event = store_artist_in_db(selected_event)
- store_ticket_in_db($user, event)
- puts "Working Program!!"
+while(true)
+    authenticated = autheticate_user_screen
+    while(authenticated)
+        main_menu_selection = logged_in_screen
+        if(main_menu_selection == "Find event by searching for an artist")
+            selected_event = get_all_events_for_artist
+            purchase_ticket(selected_event)
+        elsif(main_menu_selection == "View all your tickets")
+            $user.get_all_tickets
+        elsif(main_menu_selection == "Logout")
+            $user = nil
+            authenticated = false
+        end
+    end
+end
+
 
