@@ -50,18 +50,7 @@ def user_response_to_city
             #breaks method back to last call
             return
         else
-            confirmation = $prompt.yes?('Buy tickets?')
-            if confirmation == true
-                puts 'Congratulations!  You have tickets!'
-                sleep(1)
-                puts 'Returning to main menu...'
-                sleep (2)
-                get_specific_event_city(response, selection)
-            else
-                puts 'Returning to main menu...'
-                sleep(2)
-                return
-            end
+            get_specific_event_city(response, selection)
         end 
     end
 end
@@ -101,18 +90,7 @@ def user_response_to_state
             #breaks method back to last call
             return
         else
-            confirmation = $prompt.yes?('Buy tickets?')
-            if confirmation == true
-                puts 'Congratulations!  You have tickets!'
-                sleep(1)
-                puts 'Returning to main menu...'
-                sleep (2)
-                get_specific_event_state(response, selection)
-            else
-                puts 'Returning to main menu...'
-                sleep(2)
-                return
-            end
+        get_specific_event_state(response, selection)
         end 
     end
 end
@@ -216,8 +194,19 @@ def store_artist_in_db(event_hash)
 end
 
 def purchase_ticket(selected_event_hash)
-    event = store_artist_in_db(selected_event_hash)
-    store_ticket_in_db($user, event)
+    confirmation = $prompt.yes?('Buy tickets?')
+            if confirmation == true
+                puts 'Congratulations!  You have tickets!'
+                sleep(1)
+                puts 'Returning to main menu...'
+                sleep (2)
+                event = store_artist_in_db(selected_event_hash)
+                store_ticket_in_db($user, event)
+            else
+                puts 'Returning to main menu...'
+                sleep(2)
+                return
+            end
  end
 
 def autheticate_user_screen
