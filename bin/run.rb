@@ -1,6 +1,5 @@
 require_relative '../config/environment'
 $prompt = TTY::Prompt.new
-require 'pry'
 
 $user = nil
 $ticket_master_api_key = "kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ"
@@ -13,18 +12,12 @@ def situation_selection
     end
 end
 
-
-require 'tty-prompt'
-require 'rest-client'
-require 'json'
-$prompt = TTY::Prompt.new
-
-
 #============================================================ City search methods =================================================================================
 def city_events(city)
     response = RestClient.get('https://app.ticketmaster.com/discovery/v2/events.json?city=' + city + '&apikey=kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ')
     jason_response = JSON.parse(response)
 end
+
 def city_events_by_name(city)
     events = city_events(city)
     if events["page"]["totalElements"] == 0
@@ -35,6 +28,7 @@ def city_events_by_name(city)
         end
     end
 end
+
 def user_response_to_city
     response = $prompt.ask("Please enter a city") do |q|
         q.required true 
@@ -54,6 +48,7 @@ def user_response_to_city
         end 
     end
 end
+
 def get_specific_event_city(user_response, user_selection)
     event_array = city_events(user_response)["_embedded"]["events"].select do |event_obj|
          user_selection.include?(event_obj["id"])
@@ -66,6 +61,7 @@ def state_events(state)
     api_return = RestClient.get('https://app.ticketmaster.com/discovery/v2/events.json?stateCode=' + state + '&apikey=kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ')
      JSON.parse(api_return)
 end
+
 def state_events_by_name(state)
     if state_events(state)["page"]["totalElements"] == 0
         return false
@@ -75,6 +71,7 @@ def state_events_by_name(state)
         end
     end
 end
+
 def user_response_to_state
     response = $prompt.ask("Please enter a State (ie. TX, CA, CO, AZ)") do |q|
         q.required true 
@@ -94,6 +91,7 @@ def user_response_to_state
         end 
     end
 end
+
 def get_specific_event_state(user_response, user_selection)
     event_array = state_events(user_response)["_embedded"]["events"].select do |event_obj|
          user_selection.include?(event_obj["id"]) 
@@ -102,8 +100,6 @@ def get_specific_event_state(user_response, user_selection)
     event_array[0] #converts array into hash for ease of use
 end
 # ====================================================== Artist search method =============================================================================
-
-
 
 def get_all_events_for_artist
     puts "Please enter an artist"
@@ -195,18 +191,18 @@ end
 
 def purchase_ticket(selected_event_hash)
     confirmation = $prompt.yes?('Buy tickets?')
-            if confirmation == true
-                puts 'Congratulations!  You have tickets!'
-                sleep(1)
-                puts 'Returning to main menu...'
-                sleep (2)
-                event = store_artist_in_db(selected_event_hash)
-                store_ticket_in_db($user, event)
-            else
-                puts 'Returning to main menu...'
-                sleep(2)
-                return
-            end
+    if confirmation == true
+        puts 'Congratulations!  You have tickets!'
+        sleep(1)
+        puts 'Returning to main menu...'
+        sleep (2)
+        event = store_artist_in_db(selected_event_hash)
+        store_ticket_in_db($user, event)
+    else
+        puts 'Returning to main menu...'
+        sleep(2)
+        return
+    end
  end
 
 def autheticate_user_screen
@@ -247,15 +243,6 @@ def logged_in_screen
         menu.choice 'Logout'
     end
 end
-
-
-
-
-
-
-
-
-
 
 #===========================================
 #MAIN METHOD
