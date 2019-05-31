@@ -239,7 +239,7 @@ def autheticate_user_screen
                     $user = authenticated_user
                     break
                 end
-                puts "Incorrect Name. Try again" #Name for now. In the future, program may be updated to contain username/password
+                $prompt.error("Incorrect Name. Try again") #Name for now. In the future, program may be updated to contain username/password
             end     
         end
     end
