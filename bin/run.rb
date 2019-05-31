@@ -137,6 +137,7 @@ def logged_in_screen
     $prompt.select("What would you like to do?") do |menu|
         menu.choice 'Find event by searching for an artist'
         menu.choice 'View all your tickets'
+        menu.choice 'Get more information for all your events'
         menu.choice 'Logout'
     end
 end
@@ -152,6 +153,8 @@ while(true)
             purchase_ticket(selected_event)
         elsif(main_menu_selection == "View all your tickets")
             $user.get_all_tickets
+        elsif(main_menu_selection == "Get more information for all your events")
+            $user.get_more_event_info
         elsif(main_menu_selection == "Logout")
             $user = nil
             authenticated = false
