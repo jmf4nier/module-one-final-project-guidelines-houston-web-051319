@@ -36,12 +36,10 @@ def city_events_by_name(city)
     end
 end
 def user_response_to_city
-    response = $prompt.ask("Please enter a city") 
-    if  response == nil
-        puts "Please enter a response or push 'CTR C' to quit"
-        sleep(1)
-        user_response_to_city
-    elsif city_events_by_name(response) == false
+    response = $prompt.ask("Please enter a city") do |q|
+        q.required true 
+    end
+    if city_events_by_name(response) == false  #checks if API query returns a valid result. if not asks for another input.
         puts "please choose again"
         user_response_to_city
     else
@@ -52,7 +50,18 @@ def user_response_to_city
             #breaks method back to last call
             return
         else
-            get_specific_event_city(response, selection)
+            confirmation = $prompt.yes?('Buy tickets?')
+            if confirmation == true
+                puts 'Congratulations!  You have tickets!'
+                sleep(1)
+                puts 'Returning to main menu...'
+                sleep (2)
+                get_specific_event_city(response, selection)
+            else
+                puts 'Returning to main menu...'
+                sleep(2)
+                return
+            end
         end 
     end
 end
@@ -78,13 +87,11 @@ def state_events_by_name(state)
     end
 end
 def user_response_to_state
-    response = $prompt.ask("Please enter a State (ie. TX, CA, CO, AZ)") 
-    if  response == nil
-        puts "Please enter a response or push 'CTR C' to quit"
-        sleep(1)
-        user_response_to_state
-    elsif state_events_by_name(response) == false
-        puts "please choose again"
+    response = $prompt.ask("Please enter a State (ie. TX, CA, CO, AZ)") do |q|
+        q.required true 
+    end
+    if state_events_by_name(response) == false
+        puts "please choose again"                         #checks if API query returns a valid result. if not asks for another input.
         user_response_to_state
     else
         event_data = state_events_by_name(response.upcase)
@@ -94,7 +101,18 @@ def user_response_to_state
             #breaks method back to last call
             return
         else
-            get_specific_event_state(response, selection)
+            confirmation = $prompt.yes?('Buy tickets?')
+            if confirmation == true
+                puts 'Congratulations!  You have tickets!'
+                sleep(1)
+                puts 'Returning to main menu...'
+                sleep (2)
+                get_specific_event_state(response, selection)
+            else
+                puts 'Returning to main menu...'
+                sleep(2)
+                return
+            end
         end 
     end
 end
@@ -262,14 +280,14 @@ while(true)
         elsif(main_menu_selection == "Find event by City")
             selected_event = user_response_to_city
             if selected_event == nil
-                break
+                #breaks loop if 'back' selected
             else 
                 purchase_ticket(selected_event)
             end
         elsif(main_menu_selection == "Find event by State")
             selected_event = user_response_to_state
             if selected_event == nil 
-                break
+                #breaks loop if 'back' selected
             else 
                 purchase_ticket(selected_event)
             end
