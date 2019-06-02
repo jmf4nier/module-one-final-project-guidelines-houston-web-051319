@@ -2,7 +2,7 @@ require_relative '../config/environment'
 $prompt = TTY::Prompt.new(active_color: :cyan)
 
 $user = nil
-$ticket_master_api_key = "kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ"
+$ticket_master_api_key = "" #insert your api key here
 
 def situation_selection
     $prompt.select("Welcome to Ticket Master! What would you like to do?") do |menu|
@@ -14,7 +14,7 @@ end
 
 #============================================================ City search methods =================================================================================
 def city_events(city)
-    response = RestClient.get('https://app.ticketmaster.com/discovery/v2/events.json?city=' + city + '&apikey=kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ')
+    response = RestClient.get('https://app.ticketmaster.com/discovery/v2/events.json?city=' + city + '&apikey=' + $ticket_master_api_key)
     jason_response = JSON.parse(response)
 end
 
@@ -58,7 +58,7 @@ def get_specific_event_city(user_response, user_selection)
 end
 #===================================================== State search info =================================================================================
 def state_events(state)
-    api_return = RestClient.get('https://app.ticketmaster.com/discovery/v2/events.json?stateCode=' + state + '&apikey=kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ')
+    api_return = RestClient.get('https://app.ticketmaster.com/discovery/v2/events.json?stateCode=' + state + '&apikey=' + $ticket_master_api_key)
      JSON.parse(api_return)
 end
 
