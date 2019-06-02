@@ -77,7 +77,7 @@ def user_response_to_state
         q.required true 
     end
     if state_events_by_name(response) == false
-        puts "please choose again"                         #checks if API query returns a valid result. if not asks for another input.
+        puts "please choose again"  #checks if API query returns a valid result. if not asks for another input.
         user_response_to_state
     else
         event_data = state_events_by_name(response.upcase)
