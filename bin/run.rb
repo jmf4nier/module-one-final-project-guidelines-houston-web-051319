@@ -14,7 +14,7 @@ end
 
 #============================================================ City search methods =================================================================================
 def city_events(city)
-    response = RestClient.get('https://app.ticketmaster.com/discovery/v2/events.json?city=' + city + '&apikey=kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ')
+    response = RestClient.get('https://app.ticketmaster.com/discovery/v2/events.json?city=' + city + '&apikey=' + $ticket_master_api_key)
     jason_response = JSON.parse(response)
 end
 
@@ -58,7 +58,7 @@ def get_specific_event_city(user_response, user_selection)
 end
 #===================================================== State search info =================================================================================
 def state_events(state)
-    api_return = RestClient.get('https://app.ticketmaster.com/discovery/v2/events.json?stateCode=' + state + '&apikey=kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ')
+    api_return = RestClient.get('https://app.ticketmaster.com/discovery/v2/events.json?stateCode=' + state + '&apikey=' + $ticket_master_api_key)
      JSON.parse(api_return)
 end
 
@@ -141,21 +141,21 @@ def get_all_events_for_artist
             end
         end
     end
+
+    events_artist_event_id = events_with_artist.map do |event|
+        {name: event["name"], value: event["id"]}
+    end
     
-    puts "Here are the events with those artist"
     events = events_with_artist.map do |event_hash|
         event_hash["name"]
     end
 
-    selected_event_hash = []
-    event_selection= $prompt.select("Here are the events with those artist. Please select the one that you would like more information", events)
+    #Note that the following menu may output multiple events with the same name. However, the event options shown have different dates or times
+    event_selection= $prompt.select("Here are the events with those artist. Please select the one that you would like more information", events_artist_event_id)
 
-    generated_events.each do |event_hash|
-        if(event_hash["name"] == event_selection)
-            selected_event_hash << event_hash
-        end
+    events_with_artist.find do |event_hash|
+        event_hash["id"] == event_selection
     end
-    selected_event_hash[0]#TRY TO FINISH A HASH AND NOT AN ARRAY...USE EVENT IDs TO DIFFERENTIATE BETWEEN EVENTS WITH SAME NAMES
 end
 
 #================================================================= Database instantiations ===========================================================================================
@@ -205,6 +205,7 @@ def purchase_ticket(selected_event_hash)
     end
  end
 
+ #=========================================================Running program screens=========================================
 def autheticate_user_screen
     while($user == nil)
         selection = situation_selection
@@ -278,5 +279,3 @@ while(true)
         end
     end
 end
-
-
