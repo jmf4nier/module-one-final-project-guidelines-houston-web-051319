@@ -3,7 +3,7 @@ $prompt = TTY::Prompt.new
 require 'pry'
 
 $user = nil
-$ticket_master_api_key = "kNCnGHz4hY28w5c0svNDehC9BqiMzVrZ"
+$ticket_master_api_key = "" #insert your api key here
 
 def situation_selection
     $prompt.select("Welcome to Ticket Master! What would you like to do?") do |menu|
